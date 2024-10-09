@@ -1,10 +1,10 @@
 import os
-from ..modules.modules import ModuleDilithium
+from src.dilithium_py.modules.modules import ModuleDilithium
 
 try:
     from xoflib import shake256
 except ImportError:
-    from ..shake.shake_wrapper import shake256
+    from src.dilithium_py.shake.shake_wrapper import shake256
 
 
 class Dilithium:
@@ -22,50 +22,46 @@ class Dilithium:
         self.M = ModuleDilithium()
         self.R = self.M.ring
 
-        # Use system randomness by default, for deterministic randomness
-        # use the method `set_drbg_seed()`
+        # 默认使用系统随机性，实现确定性随机性
+        # 使用方法“set_drbg_seed()”
         self.random_bytes = os.urandom
 
     def set_drbg_seed(self, seed):
         """
-        Change entropy source to a DRBG and seed it with provided value.
+        将熵源更改为 DRBG，并用提供的值作为其种子。
 
-        Setting the seed switches the entropy source from :func:`os.urandom()`
-        to an AES256 CTR DRBG.
+        设置种子会将熵源从：func:`os.urandom()`切换到 AES256 CTR DRBG。
 
-        Used for both deterministic versions of Kyber as well as testing
-        alignment with the KAT vectors
+        用于 Kyber 的确定性版本以及测试与 KAT 向量的对齐
 
         Note:
-          currently requires pycryptodome for AES impl.
+          目前需要 pycryptodome 来实现 AES。
         """
         try:
-            from ..drbg.aes256_ctr_drbg import AES256_CTR_DRBG
+            from src.dilithium_py.drbg.aes256_ctr_drbg import AES256_CTR_DRBG
 
             self._drbg = AES256_CTR_DRBG(seed)
             self.random_bytes = self._drbg.random_bytes
         except ImportError as e:  # pragma: no cover
             print(f"Error importing AES from pycryptodome: {e = }")
             raise Warning(
-                "Cannot set DRBG seed due to missing dependencies, try installing requirements: pip -r install requirements"
+                "由于缺少依赖项，无法设置 DRBG 种子，请尝试安装要求：pip -r install requirements"
             )
 
     """
-    H() uses Shake256 to hash data to 32 and 64 bytes in a 
-    few places in the code 
+    H() 在代码中的几个地方使用 Shake256 将数据哈希为 32 和 64 字节
     """
 
     @staticmethod
     def _h(input_bytes, length):
         """
-        H: B^*  -> B^*
+        是利用 SHAKE-256 算法生成一个基于输入 input_bytes 的随机或伪随机字节序列，并返回该序列的前 length 个字节
         """
         return shake256(input_bytes).read(length)
 
     def _expand_matrix_from_seed(self, rho):
         """
-        Helper function which generates a element of size
-        k x l from a seed `rho`.
+        辅助函数从种子“rho”生成大小为k x l 的元素。
         """
         A_data = [[0 for _ in range(self.l)] for _ in range(self.k)]
         for i in range(self.k):
@@ -135,8 +131,8 @@ class Dilithium:
         s1_len = s_bytes * self.l
         s2_len = s_bytes * self.k
         t0_len = 416 * self.k
-        if len(sk_bytes) != 3 * 32 + s1_len + s2_len + t0_len:
-            raise ValueError("SK packed bytes is of the wrong length")
+        # if len(sk_bytes) != 3 * 32 + s1_len + s2_len + t0_len:
+        #     raise ValueError("SK packed bytes is of the wrong length")
 
         # Split bytes between seeds and vectors
         sk_seed_bytes, sk_vec_bytes = sk_bytes[:96], sk_bytes[96:]
@@ -214,6 +210,11 @@ class Dilithium:
 
         sk = self._pack_sk(rho, K, tr, s1, s2, t0)
         return pk, sk
+# 公钥pk中，ρ是哈希函数H的输入，t1是签名的一部分
+# 私钥sk中，ρ是哈希函数H的输入，K是私钥，tr是另一个哈希函数H’的输出，s1和s2是随机向量，t0是签名的一部分。
+# 在后续的签名和验证过程中，私钥将用于生成签名，公钥将用于验证签名。
+
+
 
     def sign(self, sk_bytes, m):
         """
@@ -275,6 +276,9 @@ class Dilithium:
                 continue
 
             return self._pack_sig(c_tilde, z, h)
+        # 这行代码是Dilithium签名算法的输出，返回一个签名 σ其中，c是签名中的哈希值的NTT表示，
+        # z是签名中的向量y和一些其他值的线性组合，h是生成签名的过程中计算出的一些用于验证签名的值的哈希值的NTT表示。
+
 
     def verify(self, pk_bytes, m, sig_bytes):
         """

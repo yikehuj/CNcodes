@@ -1,4 +1,4 @@
-from .ml_dsa import ML_DSA
+from src.dilithium_py.ml_dsa.ml_dsa import ML_DSA
 
 DEFAULT_PARAMETERS = {
     "ML_DSA_44": {

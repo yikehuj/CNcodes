@@ -1,17 +1,11 @@
-from .polynomials_generic import PolynomialRing, Polynomial
-from ..utilities.utils import (
-    reduce_mod_pm,
-    high_bits,
-    low_bits,
-    decompose,
-    check_norm_bound,
-)
-from ..utilities.utils import make_hint, make_hint_optimised, use_hint
+from src.dilithium_py.polynomials.polynomials_generic import PolynomialRing, Polynomial
+from src.dilithium_py.utilities.utils import reduce_mod_pm, high_bits, low_bits, decompose, check_norm_bound
+from src.dilithium_py.utilities.utils import make_hint, make_hint_optimised, use_hint
 
 try:
     from xoflib import shake128, shake256
 except ImportError:
-    from ..shake.shake_wrapper import shake128, shake256
+    from src.dilithium_py.shake.shake_wrapper import shake128, shake256
 
 
 class PolynomialRingDilithium(PolynomialRing):

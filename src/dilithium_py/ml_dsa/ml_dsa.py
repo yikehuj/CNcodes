@@ -1,5 +1,5 @@
 import os
-from ..modules.modules import ModuleDilithium
+from src.dilithium_py.modules.modules import ModuleDilithium
 
 try:
     from xoflib import shake256

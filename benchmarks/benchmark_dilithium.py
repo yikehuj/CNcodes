@@ -1,4 +1,4 @@
-from dilithium_py.dilithium import Dilithium2, Dilithium3, Dilithium5
+from src.dilithium_py.dilithium import Dilithium2, Dilithium3, Dilithium5
 import cProfile
 from time import time
 from statistics import mean, median

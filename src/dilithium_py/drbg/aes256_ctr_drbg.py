@@ -1,7 +1,7 @@
 import os
 from Crypto.Cipher import AES
 from typing import Optional
-from ..utilities.utils import xor_bytes
+from src.dilithium_py.utilities.utils import xor_bytes
 
 
 class AES256_CTR_DRBG:

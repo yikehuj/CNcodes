@@ -1,5 +1,5 @@
-from .modules_generic import Module, Matrix
-from ..polynomials.polynomials import PolynomialRingDilithium
+from src.dilithium_py.modules.modules_generic import Module, Matrix
+from src.dilithium_py.polynomials.polynomials import PolynomialRingDilithium
 
 
 class ModuleDilithium(Module):

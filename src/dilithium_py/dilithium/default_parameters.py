@@ -1,4 +1,4 @@
-from .dilithium import Dilithium
+from src.dilithium_py.dilithium.dilithium import Dilithium
 
 DEFAULT_PARAMETERS = {
     "dilithium2": {
