@@ -131,8 +131,8 @@ class Dilithium:
         s1_len = s_bytes * self.l
         s2_len = s_bytes * self.k
         t0_len = 416 * self.k
-        # if len(sk_bytes) != 3 * 32 + s1_len + s2_len + t0_len:
-        #     raise ValueError("SK packed bytes is of the wrong length")
+        if len(sk_bytes) != 3 * 32 + s1_len + s2_len + t0_len:
+            raise ValueError("SK packed bytes is of the wrong length")
 
         # Split bytes between seeds and vectors
         sk_seed_bytes, sk_vec_bytes = sk_bytes[:96], sk_bytes[96:]
